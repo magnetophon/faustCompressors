@@ -6,11 +6,11 @@ import("effect.lib");
 // A library of compressor building blocks, compressors and some general utilities.
 // The four most interesting examples:
 // If wanted I can make demo versions, with tooltips that are more appropriate for each model.
-process =
+// process =
 // FFcompressor_N_chan(strength,threshold,attack,release,knee,prePost,link,meter,2);
 // FBFFcompressor_N_chan(strength,threshold,attack,release,knee,prePost,link,FBFF,meter,2);
 // RMS_FBFFcompressor_N_chan(strength,threshold,attack,release,knee,prePost,link,FBFF,meter,2);
-RMS_FBcompressor_peak_limiter_N_chan(strength,threshold,thresholdLim,attack,release,knee,link,meter,2);
+// RMS_FBcompressor_peak_limiter_N_chan(strength,threshold,thresholdLim,attack,release,knee,link,meter,2);
 
 // all benchmarks with a stereo RMS_FBcompressor_peak_limiter_N_chan,
 // rmsMaxSize = 2:pow(16) and compiled with:
