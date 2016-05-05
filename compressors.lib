@@ -6,6 +6,7 @@ import("effect.lib");
 // A library of compressor building blocks, compressors and some general utilities.
 // The four most interesting examples:
 // If wanted I can make demo versions, with tooltips that are more appropriate for each model.
+
 // process =
 // FFcompressor_N_chan(strength,threshold,attack,release,knee,prePost,link,meter,2);
 // FBFFcompressor_N_chan(strength,threshold,attack,release,knee,prePost,link,FBFF,meter,2);
@@ -266,10 +267,6 @@ compressor_N_chan_demo(N) =
       [tooltip: When the signal level exceeds the Threshold (in dB), its level is compressed according to the Strength]",
       0, maxGR, 10, 0.1));
 
-    thresholdRMS = ctl_group(hslider("[1] Threshold RMS [unit:dB] [style:knob]
-      [tooltip: When the signal level exceeds the Threshold (in dB), its level is compressed according to the Strength]",
-      0, maxGR, 10, 0.1));
-
     knee = ctl_group(hslider("[2] Knee [unit:dB] [style:knob]
       [tooltip: soft knee amount in dB]",
       6, 0, 30, 0.1));
@@ -302,7 +299,7 @@ compressor_N_chan_demo(N) =
       and it's knee is half that of the compressor]", x));
 
     thresholdLim = lim_group(hslider("[9] Threshold [unit:dB] [style:knob]
-      [tooltip: The signal leveli never exceeds this threshold]",
+      [tooltip: The signal level never exceeds this threshold]",
       0, -30, 10, 0.1));
 
     makeupgain = comp_group(hslider("[6] Makeup Gain [unit:dB]
