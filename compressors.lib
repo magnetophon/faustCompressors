@@ -112,7 +112,7 @@ blockDelaysum(size,block,maxSize) = _ <: variable,par(i,int(maxSize/block), fixe
 // This time we don't look at blocks of equal size,
 // but at blocks that are double the size of the previous block.
 // The fixedDelaySum is optimised in a similar way.
-binaryBlockDelaySum(N,maxN,x) = par(i,int2nrOfBits(maxN),fixedDelaySum(1<<i,x)@sumOfPrevDelays(N,maxN,i) *take(i+1,(int2bin(N,maxN)))):>_ with {
+OLDbinaryBlockDelaySum(N,maxN,x) = par(i,int2nrOfBits(maxN),fixedDelaySum(1<<i,x)@sumOfPrevDelays(N,maxN,i) *take(i+1,(int2bin(N,maxN)))):>_ with {
   fixedDelaySum = case {
     (1,x) => x;
     (N,x) =>  fixedDelaySum(N/2,x) + fixedDelaySum(N/2,x)@(N/2);
@@ -125,8 +125,31 @@ binaryBlockDelaySum(N,maxN,x) = par(i,int2nrOfBits(maxN),fixedDelaySum(1<<i,x)@s
   };
 };
 
+//same as above, but with a parameterized operator instead of the hardwired +
+binaryBlockDelayOp(N,maxN,op,x) =
+par(i,int2nrOfBits(maxN),fixedDelaySum(1<<i,x)@sumOfPrevDelays(N,maxN,i) *take(i+1,(int2bin(N,maxN)))):combine(int2nrOfBits(maxN)) with {
+  fixedDelaySum = case {
+    (1,x) => x;
+    (N,x) =>  op(fixedDelaySum(N/2,x) , fixedDelaySum(N/2,x)@(N/2));
+  };
+  sumOfPrevDelays(N,maxN,i) = (subseq((allDelays(N,maxN)),0,i):>_*(i>0)) with {
+  // this doesn't work:
+  // sumOfPrevDelays(N,maxN,i) = (subseq((allDelays(N,maxN)),0,i):>_) with {
+  // bug in subseq?
+    allDelays(N,maxN) = par(j, int2nrOfBits(maxN), (1<<j) *  take(j+1,(int2bin(N,maxN))) );
+  };
+  combine(0) = 0;
+  combine(N) = op(combine(N-1),_);
+};
+
+binaryBlockDelaySum(N,maxN,x) = binaryBlockDelayOp(N,maxN,+,x);
+
+// convert N into a list of ones and zeros
 int2bin(N,maxN) = par(i,int2nrOfBits(maxN),int(floor(N/(1<<i)))%2);
-int2nrOfBits(maxN) = floor(log(maxN)/log(2))+1;
+// calculate how many ones and zeros are needed to represent maxN
+// the explicit int is needed for 'combine' above:
+// without it, the compiler segfaults
+int2nrOfBits(maxN) = int(floor(log(maxN)/log(2))+1);
 
 // Slow:
 // RMS(time) = pow(_,2):(blockDelaysum(s,blockSize,rmsMaxSize)/s):sqrt with {
