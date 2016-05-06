@@ -1,4 +1,5 @@
 declare author "Bart Brouns";
+declare version "0.1.1";
 declare license "GPLv3";
 
 import("effect.lib");

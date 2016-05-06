@@ -1,6 +1,6 @@
 declare author "Bart Brouns";
 declare name "RMS_FBcompressor_peak_limiter";
-declare version "0.1";
+declare version "0.1.1";
 declare license "GPLv3";
 
 import("compressors.lib");
