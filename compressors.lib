@@ -287,6 +287,16 @@ compressor_N_chan_demo(N) =
       [tooltip: A compression Strength of 0 means no gain reduction and 1 means full gain reduction]",
       1, 0, 8, 0.01));
 
+    duck_strength =
+        ctl_group(hslider("[-1] Duck Strength [style:knob]
+          [tooltip: A compression Strength of 0 means no gain reduction and 1 means full gain reduction]",
+          1, 0, 8, 0.01));
+
+    expand_strength =
+        ctl_group(hslider("[0] Expand Strength [style:knob]
+          [tooltip: A compression Strength of 0 means no gain reduction and 1 means full gain reduction]",
+          1, 0, 8, 0.01));
+
     threshold = ctl_group(hslider("[1] Threshold [unit:dB] [style:knob]
       [tooltip: When the signal level exceeds the Threshold (in dB), its level is compressed according to the Strength]",
       0, maxGR, 10, 0.1));
@@ -294,6 +304,19 @@ compressor_N_chan_demo(N) =
     knee = ctl_group(hslider("[2] Knee [unit:dB] [style:knob]
       [tooltip: soft knee amount in dB]",
       6, 0, 30, 0.1));
+
+    HPfreq =
+        ctl_group(hslider("[3] HP freq [scale:log] [style:knob]
+          [tooltip: cutoff frequency of the sidechain highpass filter]",
+          20, 20, 10000, 1));
+
+    LPfreq =
+        ctl_group(hslider("[4] LP freq [scale:log] [style:knob]
+          [tooltip: cutoff frequency of the sidechain lowpass filter]",
+          10000, 20, 10000, 1));
+
+
+    SClisten = knob_group(checkbox("SC"));
 
     env_group(x)  = knob_group(hgroup("[4] Compression Response", x));
 
@@ -359,8 +382,6 @@ nrChan = 6;
 
 N = 8;
 
-// process = bus(nrChan) <: interleave(nrChan,2)( drumDuxpander,drumDuck ) : par(i, nrChan, select2(SClisten,_,_)) ;
-
 drumDuxpander =  bus(nrChan)<: (drumDuck, bus(nrChan)):drumExpand;
 
 drumDuck =  SCfilters <: ( bus(nrChan), ( duckGainReductions <: par(i, nrChan, meDuckGR(i))) : interleave(nrChan,2)): par(i, nrChan, *);
@@ -376,24 +397,3 @@ drumExpand =  interleave(nrChan,2) : par(i, nrChan, chanGroup(i+1, SCexpander(ex
 SCfilters =  par(i, nrChan, chanGroup(i+1, (highpass(N,HPfreq): lowpass(N,LPfreq))));
 
 chanGroup(i,x) = vgroup("channel %i", x);
-
-HPfreq =
-    ctl_group(hslider("[-3] HP freq [scale:log] [style:knob]
-      [tooltip: cutoff frequency of the sidechain highpass filter]",
-      20, 20, 10000, 1));
-
-LPfreq =
-    ctl_group(hslider("[-2] LP freq [scale:log] [style:knob]
-      [tooltip: cutoff frequency of the sidechain lowpass filter]",
-      10000, 20, 10000, 1));
-
-duck_strength =
-    ctl_group(hslider("[-1] Duck Strength [style:knob]
-      [tooltip: A compression Strength of 0 means no gain reduction and 1 means full gain reduction]",
-      1, 0, 8, 0.01));
-expand_strength =
-    ctl_group(hslider("[0] Expand Strength [style:knob]
-      [tooltip: A compression Strength of 0 means no gain reduction and 1 means full gain reduction]",
-      1, 0, 8, 0.01));
-
-SClisten = checkbox("SC");
