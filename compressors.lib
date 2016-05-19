@@ -350,3 +350,50 @@ expander(strength,thresh,knee,x) = (expander_gain_computer(strength,thresh,knee,
 SCexpander(strength,thresh,knee,att,rel,SC,x) = (expander_gain_computer(strength,thresh,knee,level(att,rel,SC)):db2linear):meter*x;
 
 level(att,rel,x) = x:abs:lag_ud(att,rel):linear2db;
+
+// ******************************************************************************************
+// drumDuxpander:
+// ******************************************************************************************
+
+nrChan = 6;
+
+N = 8;
+
+// process = bus(nrChan) <: interleave(nrChan,2)( drumDuxpander,drumDuck ) : par(i, nrChan, select2(SClisten,_,_)) ;
+
+drumDuxpander =  bus(nrChan)<: (drumDuck, bus(nrChan)):drumExpand;
+
+drumDuck =  SCfilters <: ( bus(nrChan), ( duckGainReductions <: par(i, nrChan, meDuckGR(i))) : interleave(nrChan,2)): par(i, nrChan, *);
+
+duckGainReductions = par(i, nrChan, duckGainReduction(i));
+
+duckGainReduction(i) = chanGroup(i+1, my_compression_gain_mono(duck_strength,threshold,attack,release,knee,prePost));
+
+meDuckGR(i) = par(j, nrChan, (linear2db*(i!=j))):>db2linear:meter;
+
+drumExpand =  interleave(nrChan,2) : par(i, nrChan, chanGroup(i+1, SCexpander(expand_strength,threshold,knee,attack,release)));
+
+SCfilters =  par(i, nrChan, chanGroup(i+1, (highpass(N,HPfreq): lowpass(N,LPfreq))));
+
+chanGroup(i,x) = vgroup("channel %i", x);
+
+HPfreq =
+    ctl_group(hslider("[-3] HP freq [scale:log] [style:knob]
+      [tooltip: cutoff frequency of the sidechain highpass filter]",
+      20, 20, 10000, 1));
+
+LPfreq =
+    ctl_group(hslider("[-2] LP freq [scale:log] [style:knob]
+      [tooltip: cutoff frequency of the sidechain lowpass filter]",
+      10000, 20, 10000, 1));
+
+duck_strength =
+    ctl_group(hslider("[-1] Duck Strength [style:knob]
+      [tooltip: A compression Strength of 0 means no gain reduction and 1 means full gain reduction]",
+      1, 0, 8, 0.01));
+expand_strength =
+    ctl_group(hslider("[0] Expand Strength [style:knob]
+      [tooltip: A compression Strength of 0 means no gain reduction and 1 means full gain reduction]",
+      1, 0, 8, 0.01));
+
+SClisten = checkbox("SC");
