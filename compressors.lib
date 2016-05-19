@@ -390,7 +390,7 @@ duckGainReductions = par(i, nrChan, duckGainReduction(i));
 
 duckGainReduction(i) = chanGroup(i+1, my_compression_gain_mono(duck_strength,threshold,attack,release,knee,prePost));
 
-meDuckGR(i) = par(j, nrChan, (linear2db*(i!=j))):>db2linear:meter;
+meDuckGR(i) = chanGroup(i+1, par(j, nrChan, (linear2db*(i!=j))):>db2linear:meter);
 
 drumExpand =  interleave(nrChan,2) : par(i, nrChan, chanGroup(i+1, SCexpander(expand_strength,threshold,knee,attack,release)));
 
