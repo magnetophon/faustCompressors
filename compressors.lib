@@ -330,3 +330,23 @@ compressor_N_chan_demo(N) =
       [tooltip: The compressed-signal output level is increased by this amount (in dB) to make up for the level lost due to compression]",
       0, 0, maxGR*-1, 0.1)) : db2linear;
 // };
+
+// ******************************************************************************************
+// expander:
+// ******************************************************************************************
+
+expander_gain_computer(strength,thresh,knee,level) =
+  select3((level<(thresh-(knee/2)))+(level<(thresh+(knee/2))),
+    0,
+    // 0,
+    ((level-thresh-(knee/2))*-1:pow(2)/(-2*knee)) ,
+    // 0,
+    // -24,
+    (level-thresh)
+  ) :min(0)*strength;
+
+expander(strength,thresh,knee,x) = (expander_gain_computer(strength,thresh,knee,level(att,rel,x)):db2linear)*x;
+
+SCexpander(strength,thresh,knee,att,rel,SC,x) = (expander_gain_computer(strength,thresh,knee,level(att,rel,SC)):db2linear):meter*x;
+
+level(att,rel,x) = x:abs:lag_ud(att,rel):linear2db;
