@@ -1,7 +1,7 @@
 /************************************************************************
  ************************************************************************
   	FAUST library file
-	Copyright (C) 2010-2011 GRAME, Centre National de Creation Musicale
+	Copyright (C) 2016 Bart Brouns
     ---------------------------------------------------------------------
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as
@@ -51,7 +51,7 @@ declare license "LGPL";
 // unlike reduce, where the output is constant for the duration of a block.
 
 // maxN is the maximum number of values to process
-// disabledVal is the value to use when we want to ignore a block.
+// disabledVal is the value to use when we want to ignore a value.
 // In other words:
 // op(x,disabledVal) should equal x
 // So for example:
