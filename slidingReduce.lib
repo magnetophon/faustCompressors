@@ -1,0 +1,121 @@
+/************************************************************************
+ ************************************************************************
+  	FAUST library file
+	Copyright (C) 2010-2011 GRAME, Centre National de Creation Musicale
+    ---------------------------------------------------------------------
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as
+	published by the Free Software Foundation; either version 2.1 of the
+	License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+ 	License along with the GNU C Library; if not, write to the Free
+  	Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+  	02111-1307 USA.
+ ************************************************************************
+ ************************************************************************/
+
+declare name "Sliding Reduce Library";
+declare author "Bart Brouns (bart@magnetophon.nl)";
+declare copyright "Bart Brouns";
+declare version "0.1";
+declare license "LGPL";
+
+
+//---------------------------------------------------------------
+// Provides various operations on block of samples
+// using a high order 'reduce(op, n)' fold-like function :
+//
+//   slidingSumN(n,maxn) : the sliding sum of the last n input samples
+//   slidingMaxN(n,maxn) : the sliding max of the last n input samples
+//   slidingMinN(n,maxn) : the sliding min of the last n input samples
+//   slidingMeanN(n,maxn) : the sliding mean of the last n input samples
+//   slidingRMSn(n,maxn)  : the sliding RMS of the last n input samples
+//---------------------------------------------------------------
+
+
+
+//---------------------------------------------------------------
+// slidingReduce(N,maxN,op,disabledVal,x)
+//---------------------------------------------------------------
+// Fold-like high order function. Apply a binary operation <op>
+// on the last <n> consecutive samples of a signal <x>.
+// For example : reduce(max,128) will compute the maximun of each
+// block of 128 samples.
+// The output is updated each sample,
+// unlike reduce, where the output is constant for the duration of a block.
+
+// maxN is the maximum number of values to process
+// disabledVal is the value to use when we want to ignore a block.
+// In other words:
+// op(x,disabledVal) should equal x
+// So for example:
+// +(x,0) equals x
+// min(x,INFINITY) equals x
+
+slidingReduce(N,maxN,op,disabledVal,x) =
+par(i,int2nrOfBits(maxN),fixedDelayOp(1<<i,x)@sumOfPrevDelays(N,maxN,i) :useVal(i)):combine(int2nrOfBits(maxN)) with {
+// apply <op> to the last <N> values of <x>, where <N> is fixed
+  fixedDelayOp = case {
+    (1,x) => x;
+    (N,x) =>  op(fixedDelayOp(N/2,x) , fixedDelayOp(N/2,x)@(N/2));
+  };
+  // The sum of all the delays that are applied to the previous blocks
+  sumOfPrevDelays(N,maxN,0) = 0;
+  sumOfPrevDelays(N,maxN,i) = (subseq((allDelays(N,maxN)),0,i):>_) with {
+    allDelays(N,maxN) = par(j, int2nrOfBits(maxN), (1<<j) *  take(j+1,(int2bin(N,maxN))) );
+  };
+  // Apply <op> to <N> parallel inputsignals
+  combine(2) = op;
+  combine(N) = op(combine(N-1),_);
+  // Decide wether or not to use a certain value, based on N
+  // Basically only the second <select2> is needed,
+  // but this version also works for N == 0
+  // 'works' in this case means 'does the same as reduce
+  useVal(i) =
+    _<:select2((i==0) & (N==0) ,
+      select2( take(i+1,(int2bin(N,maxN))) , disabledVal,_),
+      _
+    );
+};
+
+// convert N into a list of ones and zeros
+int2bin(N,maxN) = par(i,int2nrOfBits(maxN),int(floor(N/(1<<i)))%2);
+// calculate how many ones and zeros are needed to represent maxN
+int2nrOfBits(maxN) = int(floor(log(maxN)/log(2))+1);
+
+
+// slidingSumN(n,maxn) : the sliding sum of the last n input samples
+slidingSumN(n,maxn) = slidingReduce(n,maxn,+,0);
+
+// slidingMaxN(n,maxn) : the sliding max of the last n input samples
+slidingMaxN(n,maxn) = slidingReduce(n,maxn,max,-INFINITY);
+
+// slidingMinN(n,maxn) : the sliding min of the last n input samples
+slidingMinN(n,maxn) = slidingReduce(n,maxn,min,INFINITY);
+
+// slidingMeanN(n,maxn) : the sliding mean of the last n input samples
+slidingMeanN(n,maxn) = slidingSumN(n,maxn)/n;
+
+// slidingRMSn(n,maxn)  : the sliding RMS of the last n input samples
+slidingRMSn(n,maxn) = pow(2):slidingMean(n,maxn) : sqrt;
+
+
+
+// maybe useful for math.lib:
+
+INFINITY = fconstant(float INFINITY, <math.h>);
+
+// bug in subseq?:
+// no elements is undefined.
+// proposed solution:
+// subseq((head, tail), 0, 0)      = !;
+// subseq((head, tail), 0, 1)      = head;
+// subseq((head, tail), 0, n)      = head, subseq(tail, 0, n-1);
+// subseq((head, tail), p, n)      = subseq(tail, p-1, n);
+// subseq(head, 0, n)              = head;
