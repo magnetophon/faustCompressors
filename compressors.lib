@@ -30,9 +30,9 @@ blockSize = 256; // 161s, 26%
 
 
 // rmsMaxSize = 1024; // for block diagram of blockDelaySum
-// rmsMaxSize = 8; // for block diagram of binaryBlockDelaySum
+rmsMaxSize = 8; // for block diagram of binaryBlockDelaySum
 // rmsMaxSize = 2:pow(16); // highest usable for blockDelaySum, used for benchmarking.
-rmsMaxSize = 2:pow(19);  // Nice and long: 11 seconds.
+// rmsMaxSize = 2:pow(19);  // Nice and long: 11 seconds.
 // binaryBlockDelaySum is practically equally cheap at any size, up to:
 // rmsMaxSize = 2:pow(25);
 // Crashes when ypu go higher, cause 2^25 eats more than half my RAM.
@@ -128,10 +128,10 @@ OLDbinaryBlockDelaySum(N,maxN,x) = par(i,int2nrOfBits(maxN),fixedDelaySum(1<<i,x
 
 //same as above, but with a parameterized operator instead of the hardwired +
 binaryBlockDelayOp(N,maxN,op,x) =
-par(i,int2nrOfBits(maxN),fixedDelaySum(1<<i,x)@sumOfPrevDelays(N,maxN,i) *take(i+1,(int2bin(N,maxN)))):combine(int2nrOfBits(maxN)) with {
-  fixedDelaySum = case {
+par(i,int2nrOfBits(maxN),fixedDelayOp(1<<i,x)@sumOfPrevDelays(N,maxN,i) *take(i+1,(int2bin(N,maxN)))):combine(int2nrOfBits(maxN)) with {
+  fixedDelayOp = case {
     (1,x) => x;
-    (N,x) =>  op(fixedDelaySum(N/2,x) , fixedDelaySum(N/2,x)@(N/2));
+    (N,x) =>  op(fixedDelayOp(N/2,x) , fixedDelayOp(N/2,x)@(N/2));
   };
   sumOfPrevDelays(N,maxN,i) = (subseq((allDelays(N,maxN)),0,i):>_*(i>0)) with {
   // this doesn't work:
