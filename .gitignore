@@ -9,3 +9,7 @@
 *.lv2
 /faust.*/
 /*-svg/
+/RMS_FBFFcompressor
+/RMS_FBcompressor_peak_limiter
+/RMS_FBcompressor_peak_limiter_mono
+/drumDuxpander
