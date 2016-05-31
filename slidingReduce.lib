@@ -28,8 +28,8 @@ declare license "LGPL";
 
 
 //---------------------------------------------------------------
-// Provides various operations on block of samples
-// using a high order 'reduce(op, n)' fold-like function :
+// Provides various operations on the last N samples
+// using a high order 'slidingReduce(N,maxN,op,disabledVal,x)' fold-like function :
 //
 //   slidingSumN(n,maxn) : the sliding sum of the last n input samples
 //   slidingMaxN(n,maxn) : the sliding max of the last n input samples
@@ -45,18 +45,23 @@ declare license "LGPL";
 //---------------------------------------------------------------
 // Fold-like high order function. Apply a binary operation <op>
 // on the last <n> consecutive samples of a signal <x>.
-// For example : reduce(max,128) will compute the maximun of each
-// block of 128 samples.
+// For example : slidingReduce(128,128,max,-INFINITY) will compute the maximun of
+// the last 128 samples.
 // The output is updated each sample,
 // unlike reduce, where the output is constant for the duration of a block.
 
-// maxN is the maximum number of values to process
+// N           is the number of values to process
+// maxN        is the maximum number of values to process
+// op          is the operator
 // disabledVal is the value to use when we want to ignore a value.
+
 // In other words:
 // op(x,disabledVal) should equal x
-// So for example:
+// For example:
 // +(x,0) equals x
 // min(x,INFINITY) equals x
+// So if we want to calculate the sum, we need to give 0 as disabledVal,
+// and if we want the minimum, we need to give INFINITY as disabledVal
 
 slidingReduce(N,maxN,op,disabledVal,x) =
 par(i,maxNrBits,fixedDelayOp(1<<i,x)@sumOfPrevDelays(N,maxN,i) :useVal(i)):combine(maxNrBits) with {
