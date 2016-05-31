@@ -150,6 +150,7 @@ int2bin(N,maxN) = par(i,int2nrOfBits(maxN),int(floor(N/(1<<i)))%2);
 // calculate how many ones and zeros are needed to represent maxN
 // the explicit int is needed for 'combine' above:
 // without it, the compiler segfaults
+int2nrOfBits(0) = 0;
 int2nrOfBits(maxN) = int(floor(log(maxN)/log(2))+1);
 
 // Slow:
