@@ -73,12 +73,16 @@ declare license "LGPL";
 // They build on each others ideas, so form a better followable train of thought.
 
 // Method 1
+// implemented in:
+// https://github.com/magnetophon/faustCompressors/blob/master/compressors.lib#L84
 
 // The simplest is to look up what the value is now, add it to the value of one sample ago,
 // add that to the value two samples ago, and so forth.
 // This costs one plus and one delayline for each value we want to sum.
 
 // Method 2
+// implemented in:
+// https://github.com/magnetophon/faustCompressors/blob/master/compressors.lib#L92
 
 // A more efficient method is based on the following idea:
 // The sum of the last 10 values, let's call them v0 trough v-9, delayed by 10 samples,
@@ -91,6 +95,8 @@ declare license "LGPL";
 // on top of the operators to calculate the sum of the first ten.
 
 // Method 3
+// implemented in:
+// https://github.com/magnetophon/faustCompressors/blob/master/compressors.lib#L130
 
 // The next step is to take this idea to the extreme:
 // We can calculat the sum of the last four values as the sum of the last two plus the sum of the last two delayed by 2.
