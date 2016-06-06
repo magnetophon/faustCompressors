@@ -69,9 +69,16 @@ declare license "LGPL";
 //---------------------------------------------------------------
 
 // Say we want the sum of the last 100 values.
+// I will explain 3 methods to do that, each more complex but less expensive then the last.
+// They build on each others ideas, so form a better followable train of thought.
+
+// Method 1
+
 // The simplest is to look up what the value is now, add it to the value of one sample ago,
 // add that to the value two samples ago, and so forth.
-// This costs one plus and one delayline for each sample we want to look at.
+// This costs one plus and one delayline for each value we want to sum.
+
+// Method 2
 
 // A more efficient method is based on the following idea:
 // The sum of the last 10 values, let's call them v0 trough v-9, delayed by 10 samples,
@@ -80,7 +87,10 @@ declare license "LGPL";
 
 // So now we just need to calculate the sum of only 10 values (let's call it the block), add it to itself delayed by 10 samples,
 // add that to the block delayed by 20 samples, etcetera.
-// So adding 10 samples more, only costs one plus and one delay.
+// So adding 10 samples more, only costs one plus and one delay,
+// on top of the operators to calculate the sum of the first ten.
+
+// Method 3
 
 // The next step is to take this idea to the extreme:
 // We can calculat the sum of the last four values as the sum of the last two plus the sum of the last two delayed by 2.
