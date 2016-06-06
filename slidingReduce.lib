@@ -70,7 +70,7 @@ declare license "LGPL";
 
 // Say we want the sum of the last 100 values.
 // The simplest is to look up what the value is now, add it to the value of one sample ago,
-// add that to the value three samples ago, and so forth.
+// add that to the value two samples ago, and so forth.
 // This costs one plus and one delayline for each sample we want to look at.
 
 // A more efficient method is based on the following idea:
@@ -86,16 +86,17 @@ declare license "LGPL";
 // We can calculat the sum of the last four values as the sum of the last two plus the sum of the last two delayed by 2.
 // The sum of the last eight is the sum of the last four plus the sum of the last four delayed by four.
 // And on until you reach 128.
-// So now it only costs one plus and one delay to double the amount of values we look at.
+// So now it only costs one plus and one delay to double the number of values we sum.
 
 // Trouble is, we wanted a 100 values, not 128.
 // Even better would be to choose at run time how many values to add.
-// This is how:
+// To explain how that's done, we will see how it's done for each of the above three methods.
 
 // To choose whether a value is used, we can multiply it by 1 or 0 after it has been delayed.
 // So in the first method, if we want to have the sum of the last 42 values out of a maximum of 100,
-// we multiply v0 through v-41 by 1 anrd v-42 trough v-99 by 0, and then add them all up.
-// This costs one multiply for each extra value we want to switch.
+// we multiply v0 through v-41 by 1 and v-42 trough v-99 by 0, and then add them all up.
+// This costs one multiply for each extra value we want to switch,
+// on top of the operations to do the non-switched version.
 
 // In the second method, we need to multiply the blocks.
 // So blocks 0 through -4 representing v0 trough -39 get multiplied by 1,
@@ -125,7 +126,9 @@ declare license "LGPL";
 // If we wanted to get the sum of the last 32 values,
 // we'd also use the 32 block, but not delayed, so it would represent
 // v0 trough v-31
-// Now we only need one multiply and one delay for each doubling of the number of values.
+
+// So for making the third method switchable,
+// we only need one multiply and one delay for each doubling of the number of values.
 
 // To generalize from a function that adds the last n values
 // to one that does any* two input operation on the last n values,
