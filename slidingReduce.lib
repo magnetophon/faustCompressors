@@ -148,11 +148,15 @@ declare license "LGPL";
 // we only need one multiply and one delay for each doubling of the number of values.
 
 // To generalize from a function that adds the last n values
-// to one that does any* two input operation on the last n values,
+// to one that does any(* note) two input operation on the last n values,
 // we just need to replace the  'times 1' and 'times 0'
 // by 'choose input value' and 'choose bypass value' respectively.
+// And of course change out the plus operator for a placeholder.
+// That is implemented in slidingReduce below.
 
-// * Not actually any operation: there are a few assumtions in the algorythm, as explained above.
+// If you can not, or do not want to specify a 'bypass value', you can use newSlidingReduce below.
+
+// (* note) Not actually any operation: there are a few assumtions in the algorithm, as explained above.
 
 
 // todo: can we do it with one switched block less and an op(x) at the end?
