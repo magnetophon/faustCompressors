@@ -106,7 +106,7 @@ declare license "LGPL";
 
 // Trouble is, we wanted a 100 values, not 128.
 // Even better would be to choose at run time how many values to add.
-// To explain how that's done, we will see how it's done for each of the above three methods.
+// To explain how that's done, we will again look at each of the above three methods.
 
 // To choose whether a value is used, we can multiply it by 1 or 0 after it has been delayed.
 // So in the first method, if we want to have the sum of the last 42 values out of a maximum of 100,
@@ -115,7 +115,7 @@ declare license "LGPL";
 // on top of the operations to do the non-switched version.
 
 // In the second method, we need to multiply the blocks.
-// So blocks 0 through -4 representing v0 trough -39 get multiplied by 1,
+// So blocks 0 through -4 representing v0 trough -v39 get multiplied by 1,
 // and block -5 trough -10, representing v-40 trough -99, get turned off.
 // But thats only 40 values.
 // To get the last two, we need to use a variable block:
@@ -126,21 +126,22 @@ declare license "LGPL";
 // This costs one multiply per 10 values, plus the 10 multiplies and single delay for the variable block.
 
 // To switch on and off values in the third method is a bit tricky:
-// We only want to calculate each size of block once.
-// With the second method, the normal blocks have a fixed delaytime:
+// With the second method, the normal (non variable) blocks have a fixed delaytime:
 // Block 4 will only ever be used when blocks 1 trough 3 are allready on,
-// so it always gets a delay of 30.
+// so it always gets a delay of 30 samples.
 
-// The problem with the 3rd method is that the blocks are not always used in the same order:
+// The problem with the 3rd method is that the blocks are not always used in the same order,
+// So they need a variable delay:
 
 // For 42 we need a block of 32, plus a block of 8, plus a block of 2.
 // The block of 2 doesn't get delayed, so represents v0 and v-1,
-// the block of 8 gets delayed by 2 so represents v-2 trough v-9
+// the block of 8 gets delayed by 2 so it represents v-2 trough v-9
 // and the block of 32 gets delayed by 10, so represents v-10 trough v-41.
+// Add them all up, and we have the sum of v0 trough v-41 again.
 
 // To illustrate that a certain block does not always get the same delay:
 // If we wanted to get the sum of the last 32 values,
-// we'd also use the 32 block, but not delayed, so it would represent
+// we'd also use the 32 block, but *not* delayed, so it would represent
 // v0 trough v-31
 
 // So for making the third method switchable,
