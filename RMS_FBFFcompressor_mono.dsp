@@ -1,6 +1,6 @@
 declare author "Bart Brouns";
 declare name "RMS_FBFFcompressor_mono";
-declare version "0.1.1";
+declare version "1.0";
 declare license "GPLv3";
 
 import("compressors.lib");

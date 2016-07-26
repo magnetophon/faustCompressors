@@ -247,7 +247,7 @@ slidingMinN(n,maxn) = slidingReduce(n,maxn,min,INFINITY);
 slidingMeanN(n,maxn) = slidingSumN(n,maxn)/n;
 
 // slidingRMSn(n,maxn)  : the sliding RMS of the last n input samples
-slidingRMSn(n,maxn) = pow(2):slidingMean(n,maxn) : sqrt;
+slidingRMSn(n,maxn) = pow(2):slidingMeanN(n,maxn) : sqrt;
 
 
 

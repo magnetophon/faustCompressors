@@ -1,6 +1,6 @@
 declare author "Bart Brouns";
 declare name "FBFFcompressor";
-declare version "0.1.1";
+declare version "1.0";
 declare license "GPLv3";
 
 import("compressors.lib");
