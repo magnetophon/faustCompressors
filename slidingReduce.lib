@@ -27,6 +27,8 @@ declare version "0.1";
 declare license "LGPL";
 
 
+import("math.lib");
+
 //---------------------------------------------------------------
 // Provides various operations on the last N samples
 // using a high order 'slidingReduce(N,maxN,op,disabledVal,x)' fold-like function :
