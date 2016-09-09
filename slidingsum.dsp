@@ -1,12 +1,15 @@
 import("slidingReduce.lib");
 
-sumNr = int(vslider("sum number", 1, 0, maxNrBits, 1));
+sumNr = int(vslider("sum number", 1, 0, 10946 , 1));
 
 // process = slidingSumN(sumNr,8);
 // process = int2fibonacci(21);
 // process(x) = fixedFibonacciOp(8,max,0,x) ;
 // process(x) = FibonacciOp(7,max,-INFINITY,x) ;
+// process(x) = sumNr;
 process(x) = fibReduce(sumNr,maxNrBits,max,-INFINITY,x) ;
+// process(x)  = fixedFibonacciOp(5,max,-INFINITY,x);
+
 // process = int2FibonacciIndexOfLargestPart(7);
 // process = Fibonacci2int(int2FibonacciFloored(7));
 // process = Fibonacci2int(int2FibonacciIndexOfLargestPart(3));

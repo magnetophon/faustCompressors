@@ -241,10 +241,39 @@ isFibonacci(N) =
 
 
 
+// fixedFibonacciOp(N,op,disabledVal,x) =
 fixedFibonacciOp(0,op,disabledVal,x) = disabledVal;
 fixedFibonacciOp(1,op,disabledVal,x) = x;
 fixedFibonacciOp(2,op,disabledVal,x) = x;
-fixedFibonacciOp(i,op,disabledVal,x) = op(fixedFibonacciOp((i-1),op,disabledVal,x), fixedFibonacciOp((i-2),op,disabledVal,x)@Fibonacci2int(i-1));
+// fixedFibonacciOp(3,op,disabledVal,x) = op(x,x');
+fixedFibonacciOp(N,op,disabledVal,x) =
+// fixedFibonacciOp =
+// fixedFibonacciOpPart(0,op,disabledVal,x,disabledVal,disabledVal) : (seq(i, maxNrBits-1, fixedFibonacciOpPart(i+1,op,x)));
+ (x,disabledVal):(seq(i, N-2, fixedFibonacciOpPart(i+3))):(_,!)
+//  fixedFibonacciOpPart(3)
+//  :
+// fixedFibonacciOpPart(4)
+//  :
+// fixedFibonacciOpPart(5)
+// fixedFibonacciOpPart(3,op,disabledVal);// : fixedFibonacciOpPart(4,op,disabledVal) : fixedFibonacciOpPart(5,op,disabledVal);
+with {
+
+// fixedFibonacciOpPart(0,val,valMinOne) = disabledVal,disabledVal,disabledVal;
+// fixedFibonacciOpPart(1,val,valMinOne) = val,disabledVal,disabledVal;
+// fixedFibonacciOpPart(2,val,valMinOne) = x,disabledVal;
+fixedFibonacciOpPart(3,val,valMinOne) = op(x,x'),x;
+// fixedFibonacciOpPart(3,val,valMinOne) = op(val,val'),valMinOne;
+fixedFibonacciOpPart(i,val,valMinOne) = op(val, valMinOne@Fibonacci2int(i-1)),val;
+// fixedFibonacciOpPart(i,val,valMinOne) = ((val, (valMinOne@Fibonacci2int(i-1)<:(_,_))):(op,_));
+// fixedFibonacciOpPart(i,op,disabledVal,val,valMinOne,valMinTwo) = valMinOne@Fibonacci2int(i-1)<:(_,_);
+
+};
+
+
+// fixedFibonacciOp(0,op,disabledVal,x) = disabledVal;
+// fixedFibonacciOp(1,op,disabledVal,x) = x;
+// fixedFibonacciOp(2,op,disabledVal,x) = x;
+// fixedFibonacciOp(i,op,disabledVal,x) = op(fixedFibonacciOp((i-1),op,disabledVal,x), fixedFibonacciOp((i-2),op,disabledVal,x)@Fibonacci2int(i-1));
 
 
 FibonacciOp(0,op,disabledVal,x) = disabledVal;
@@ -288,7 +317,8 @@ Fibonacci2intRecurive(0)=0;
 Fibonacci2intRecurive(1)=1;
 Fibonacci2intRecurive(N) = Fibonacci2intRecurive(N-1) + Fibonacci2intRecurive(N-2);
 
-maxNrBits = 14;
+maxNrBits = 21;
+// maxNrBits = 14;
 // works fine up to about 21 maxNrBits, but then eats all RAM trying to compile:
 // Fibonacci2int(N) = par(i,maxNrBits, Fibonacci2intRecurive(i)*(N==i)):>_;
 // so we do:
@@ -299,7 +329,7 @@ fibReduce(N,maxN,op,disabledVal,x) =
   (N,disabledVal,0):seq(i,maxNrBits, fibPart(i) ):(!,_,!)
   // (N,disabledVal,0):fibPart(0)
   // :fibPart(1)
-    // ((fixedFibonacciOp( (maxNrBits-i) , op,disabledVal,x))@666)
+    // (fixedFibonacciOp( (3) , op,disabledVal,x))
 
       // ((fixedFibonacciOp( largestIndex(maxNrBits-i) ,op,disabledVal,x))@666)
  // largestIndex(N)
