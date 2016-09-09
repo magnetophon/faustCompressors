@@ -288,7 +288,7 @@ Fibonacci2intRecurive(0)=0;
 Fibonacci2intRecurive(1)=1;
 Fibonacci2intRecurive(N) = Fibonacci2intRecurive(N-1) + Fibonacci2intRecurive(N-2);
 
-maxNrBits = 12;
+maxNrBits = 8;
 // works fine up to about 21 maxNrBits, but then eats all RAM trying to compile:
 // Fibonacci2int(N) = par(i,maxNrBits, Fibonacci2intRecurive(i)*(N==i)):>_;
 // so we do:
@@ -296,12 +296,12 @@ time 		= (+(1)~_ ) - 1; 			// 0,1,2,3,...
 Fibonacci2int(i) = rdtable(maxNrBits, Fibonacci2intSeq(int(time),maxNrBits), i);
 
 fibReduce(N,maxN,op,disabledVal,x) =
-  (N,disabledVal,0):seq(i,maxNrBits, fibPart(i) )
+  (N,disabledVal,0):seq(i,maxNrBits, fibPart(i) ):(!,_,!)
   // (N,disabledVal,0):fibPart(0)
   // :fibPart(1)
     // ((fixedFibonacciOp( (maxNrBits-i) , op,disabledVal,x))@666)
 
-      // ((fixedFibonacciOp( largestIndex(maxNrBits-i) ,op,disabledVal,x))@666) * isUsed
+      // ((fixedFibonacciOp( largestIndex(maxNrBits-i) ,op,disabledVal,x))@666)
  // largestIndex(N)
 
         // (isUsed((maxNrBits-i),N ))
@@ -309,12 +309,12 @@ fibReduce(N,maxN,op,disabledVal,x) =
 
 
 with {
-  i=3;
+  // i=3;
   isUsed(i,n) = int2FibonacciIndexOfLargestPart(n) == i;
   fibPart(i,rest,intermediateVal,sumOfDelays) =
-    (max(0, rest-(isUsed((maxNrBits-i),N ) * ( Fibonacci2int(int2FibonacciIndexOfLargestPart(Fibonacci2int(maxNrBits-i))) )))),
-    op(intermediateVal, ((fixedFibonacciOp( (maxNrBits-i) , op,disabledVal,x))@sumOfDelays)),
-    (sumOfDelays+largestInt(rest));
+    (max(0, rest-(isUsed((maxNrBits-i),rest ) * ( Fibonacci2int(int2FibonacciIndexOfLargestPart(Fibonacci2int(maxNrBits-i))) )))),
+    op(intermediateVal, isUsed((maxNrBits-i),rest ) *((fixedFibonacciOp( (maxNrBits-i) , op,disabledVal,x))@sumOfDelays)),
+    (sumOfDelays+ (isUsed((maxNrBits-i),rest ) * largestInt(rest)));
   // maxNrBits = int2FibonacciIndexOfLargestPart(maxN)+1;
   largestIndex(n) = int2FibonacciIndexOfLargestPart(n);
   largestInt(n) = Fibonacci2int(largestIndex(n));
