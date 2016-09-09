@@ -229,6 +229,130 @@ with {
   };
 };
 
+
+isSquare(N) =
+(sqrt(N)  == floor(sqrt(N)));
+// N is a Fibonacci number if and only if 5 N^2 + 4 or 5 N^2 - 4 is a square number.
+// http://www.maths.surrey.ac.uk/hosted-sites/R.Knott/Fibonacci/fibFormula.html#section5
+isFibonacci(N) =
+  isSquare((5*(pow(N,2)))+4)
+  +
+  isSquare((5*(pow(N,2)))-4);
+
+
+
+fixedFibonacciOp(0,op,disabledVal,x) = disabledVal;
+fixedFibonacciOp(1,op,disabledVal,x) = x;
+fixedFibonacciOp(2,op,disabledVal,x) = x;
+fixedFibonacciOp(i,op,disabledVal,x) = op(fixedFibonacciOp((i-1),op,disabledVal,x), fixedFibonacciOp((i-2),op,disabledVal,x)@Fibonacci2int(i-1));
+
+
+FibonacciOp(0,op,disabledVal,x) = disabledVal;
+FibonacciOp(1,op,disabledVal,x) = x;
+FibonacciOp(N,op,disabledVal,x) =
+  op( fixedFibonacciOp( largestIndex ,op,disabledVal,x) , (FibonacciOp (rest,op,disabledVal,x)@largestInt) )
+with {
+  largestIndex = int2FibonacciIndexOfLargestPart(N);
+  largestInt = Fibonacci2intRecurive(largestIndex);
+  rest = max(0, N-largestInt);
+};
+Phi =  (sqrt(5) +1)/2;
+int2FibonacciFloat(0) = 0;
+int2FibonacciFloat(1) = 1;
+int2FibonacciFloat(N) = (log(N) + (log(5)/2))/log(Phi); // source: http://www.maths.surrey.ac.uk/hosted-sites/R.Knott/Fibonacci/fibFormula.html#section6
+int2FibonacciFloored(N) = int(floor(int2FibonacciFloat(N)));
+int2FibonacciIndexOfLargestPart(N) = // int2fibonacci sometimes gives a sligthly too low value, so we test:
+  (int2FibonacciFloored(N)       * (N >= Fibonacci2intRecurive(int2FibonacciFloored(N))))
+  +
+  ((int2FibonacciFloored(N) + 1) * (N <  Fibonacci2intRecurive(int2FibonacciFloored(N))))
+  ; // more info: http://www.maths.surrey.ac.uk/hosted-sites/R.Knott/Fibonacci/fibFormula.html#section6
+
+Fibonacci2intPart(0,prevFib)=0,(prevFib:!) <:(_,_);
+Fibonacci2intPart(1,prevFib)=1,(prevFib:!) <:(_,_);
+Fibonacci2intPart(2,prevFib)=1,(prevFib:!) <:(_,_);
+Fibonacci2intPart(n,prevFib) = int( prevFib * Phi ) <:(_,_);    // for all n > 1
+
+myBus(0)=0:!; // redefine bus so it can have 0 elements
+myBus(n) = bus(n);
+
+Fibonacci2intSeq(n,maxN) =
+  seq(i, maxN , myBus(i) , Fibonacci2intPart(i))
+  : (bus(maxN),!)
+  : (par(i, maxN, * (i==n)))
+  :>_
+with {
+  // maxNrBits = int2FibonacciIndexOfLargestPart(maxN);
+};
+
+
+Fibonacci2intRecurive(0)=0;
+Fibonacci2intRecurive(1)=1;
+Fibonacci2intRecurive(N) = Fibonacci2intRecurive(N-1) + Fibonacci2intRecurive(N-2);
+
+maxNrBits = 28;
+// works fine up to about 21 maxNrBits, but then eats all RAM trying to compile:
+// Fibonacci2int(N) = par(i,maxNrBits, Fibonacci2intRecurive(i)*(N==i)):>_;
+// so we do:
+Fibonacci2int(N) = par(i,maxNrBits, Fibonacci2intRecurive(i)*(N==i)):>_;
+
+tablesize 	= 28;
+time 		= (+(1)~_ ) - 1; 			// 0,1,2,3,...
+FibonacciTable(i) = rdtable(tablesize, Fibonacci2intSeq(int(time),tablesize), i);
+
+fibReduce(N,maxN,op,disabledVal,x,rest) =
+  // (N,disabledVal,0):seq(i,maxNrBits, fibPart )
+  // fibPart(N,disabledVal,0)
+
+      // ((fixedFibonacciOp( largestIndex(maxNrBits-i) ,op,disabledVal,x))@666) * isUsed
+ // largestIndex(maxNrBits-i)
+
+        // (isUsed((maxNrBits-i),N ))
+        // maxNrBits
+        // Fibonacci2int(8)
+        Fibonacci2intSeq(8,8)
+        // Fibonacci2intPart(0,_)
+        // int2FibonacciIndexOfLargestPart(maxN)
+
+
+with {
+  i=3;
+  isUsed(i,n) = int2FibonacciIndexOfLargestPart(n) == i;
+  fibPart(rest,intermediateVal,sumOfDelays,i) =
+    (max(0, rest-(isUsed((maxNrBits-i),N ) * ( Fibonacci2int(int2FibonacciIndexOfLargestPart(Fibonacci2int(maxNrBits-i))) )))),
+    ((fixedFibonacciOp( largestIndex(rest) ,op,disabledVal,x))@sumOfDelays),
+    (sumOfDelays+largestInt(rest));
+  maxNrBits = int2FibonacciIndexOfLargestPart(maxN)+1;
+  largestIndex(n) = int2FibonacciIndexOfLargestPart(n);
+  largestInt(n) = Fibonacci2int(largestIndex(n));
+};
+
+
+
+FibonacciSlidingReduce(N,maxN,op,disabledVal,x) =
+  par(i,maxNrBits,fixedFibonacciOp(i)@sumOfPrevDelays(N,maxN,i) :useVal(i)):combine(maxNrBits) with {
+    // The sum of all the delays that are applied to the previous blocks
+    sumOfPrevDelays(N,maxN,0) = 0;
+    sumOfPrevDelays(N,maxN,i) = (subseq((allDelays(N,maxN)),0,i):>_) with {
+      allDelays(N,maxN) = par(j, maxNrBits, j *  take(j+1,(int2bin(N,maxN))) );
+      };
+    maxNrBits = int2FibonacciIndexOfLargestPart(maxN)+1;
+    // Apply <op> to <N> parallel inputsignals
+    combine(2) = op;
+    combine(N) = op(combine(N-1),_);
+    // Decide wether or not to use a certain value, based on N
+    // Basically only the second <select2> is needed,
+    // but this version also works for N == 0
+    // 'works' in this case means 'does the same as reduce
+    useVal(i) =
+    _<:select2((i==0) & (N==0) ,
+    select2( take(i+1,(int2bin(N,maxN))) , disabledVal,_),
+    _
+    );
+    // useVal(i) =
+    //     select2( take(i+1,(int2bin(N,maxN))) , disabledVal,_);
+  };
+
+
 // // convert N into a list of ones and zeros
 int2bin(N,maxN) = par(i,int2nrOfBits(maxN),int(floor(N/(1<<i)))%2);
 // calculate how many ones and zeros are needed to represent maxN
