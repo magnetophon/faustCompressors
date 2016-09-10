@@ -1,15 +1,26 @@
 import("slidingReduce.lib");
 
-sumNr = int(hslider("sum number", 1, 0, 514228 , 1):max(0));
+sumNr = int(hslider("sum number", 1, 1, 514228 , 1):max(0));
+// sumNr = int(hslider("sum number", 1, 0, 2^19 , 1):max(0));
 index = int(hslider("index", 1, 0, maxNrBits , 1));
 
-// process = slidingSumN(sumNr,8);
+// process(x) = slidingReduce(sumNr,2^19,max,-INFINITY,x);
+// process(x) = slidingReduce(sumNr,2^19,+,0,x);
 // process = int2fibonacci(21);
-// process(x) = fixedFibonacciOp(8,max,0,x) ;
-// process(x) = FibonacciOp(7,max,-INFINITY,x) ;
+// process(x) =
+// fixedFibonacciOp(0,max,0,x),
+// fixedFibonacciOp(1,max,0,x),
+// fixedFibonacciOp(2,max,0,x),
+// process(x) = fixedFibonacciOps(maxNrBits,max,-INFINITY,x):par(i, maxNrBits+1, _*(i==index)):>_;
+// fixedFibonacciOp(4,max,0,x);
+// fixedFibonacciOp(5,max,0,x);
+
+
+
 // process(x) = sumNr;
 
-process(x) = fibReduce(sumNr,maxNrBits,max,-INFINITY,x) ;
+process(x) = fibReduce(sumNr,maxNrBits,+,0,x) ;
+// process(x) = fibReduce(sumNr,maxNrBits,max,-INFINITY,x) ;
 
 
 // process = par(i,maxNrBits, int2FibonacciIndexOfLargestPart(i):hbargraph("index %i", 0, maxNrBits));
