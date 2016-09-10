@@ -301,15 +301,19 @@ myBus(0)=0:!; // redefine bus so it can have 0 elements
 myBus(n) = bus(n);
 
 Fibonacci2intSeq(n,maxN) =
+  // 1:seq(i, maxN-1 , int( _ * Phi ))
+
+
   0<:(_,_):seq(i, maxN-1 , myBus(i+1) , Fibonacci2intPart(i+1))
   : (bus(maxN),!)
   : (par(i, maxN, * (i==n)))
+  // : selector(1,maxN)
   :>_
 with {
   // Fibonacci2intPart(0,prevFib)=0,(prevFib:!) <:(_,_);
   Fibonacci2intPart(1,prevFib)=1,(prevFib:!) <:(_,_);
   Fibonacci2intPart(2,prevFib)=1,(prevFib:!) <:(_,_);
-  Fibonacci2intPart(n,prevFib) = int( prevFib * Phi ) <:(_,_);    // for all n > 1
+  Fibonacci2intPart(n,prevFib) = ( prevFib * Phi ) : (_+0.5:floor) <:(_,_);    // for all n > 1
 };
 
 
@@ -320,10 +324,11 @@ Fibonacci2intRecurive(N) = Fibonacci2intRecurive(N-1) + Fibonacci2intRecurive(N-
 maxNrBits = 21;
 // maxNrBits = 14;
 // works fine up to about 21 maxNrBits, but then eats all RAM trying to compile:
-// Fibonacci2int(N) = par(i,maxNrBits, Fibonacci2intRecurive(i)*(N==i)):>_;
+// Fibonacci2int(N) = par(i,maxNrBits+1, Fibonacci2intRecurive(i)*(N==i)):>_;
 // so we do:
-time 		= (+(1)~_ ) - 1; 			// 0,1,2,3,...
-Fibonacci2int(i) = rdtable(maxNrBits, Fibonacci2intSeq(int(time),maxNrBits), i:min(maxNrBits):max(0));
+time 		= int((+(1)~_ ) - 1); 			// 0,1,2,3,...
+// Fibonacci2int(i) = rdtable(maxNrBits+1, par(j,maxNrBits+1, Fibonacci2intRecurive(j)*(j==(int(time)))):>_, i:min(maxNrBits+1):max(0));
+Fibonacci2int(i) = rdtable(maxNrBits+1, Fibonacci2intSeq(time,maxNrBits+1), i:min(maxNrBits+1):max(0));
 
 fibReduce(N,maxN,op,disabledVal,x) =
   (N,disabledVal,0):seq(i,maxNrBits, fibPart(i) ):(!,_,!)

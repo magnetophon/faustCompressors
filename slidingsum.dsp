@@ -1,6 +1,7 @@
 import("slidingReduce.lib");
 
-sumNr = int(vslider("sum number", 1, 0, 10946 , 1));
+// sumNr = int(vslider("sum number", 1, 0, 10946 , 1));
+sumNr = int(vslider("sum number", 1, 0, 21 , 1));
 
 // process = slidingSumN(sumNr,8);
 // process = int2fibonacci(21);
@@ -8,7 +9,14 @@ sumNr = int(vslider("sum number", 1, 0, 10946 , 1));
 // process(x) = FibonacciOp(7,max,-INFINITY,x) ;
 // process(x) = sumNr;
 process(x) = fibReduce(sumNr,maxNrBits,max,-INFINITY,x) ;
-// process(x)  = fixedFibonacciOp(5,max,-INFINITY,x);
+// process(x)  = fixedFibonacciOp(13,max,-INFINITY,x);
+// process = Fibonacci2int(sumNr): hbargraph("fib",0,10946);
+
+// process = Fibonacci2intSeq(sumNr,22): hbargraph("fib",0,10946);
+// process = (sumNr/10):(_+0.5:floor) : hbargraph("fib",0,2);
+
+// process = par(i, 21, pow(2,i)* (i==sumNr)):> hbargraph("fib",0,10946);
+// process =  Fibonacci2int(sumNr): hbargraph("fib",0,10946);
 
 // process = int2FibonacciIndexOfLargestPart(7);
 // process = Fibonacci2int(int2FibonacciFloored(7));
