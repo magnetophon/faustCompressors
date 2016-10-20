@@ -2,20 +2,20 @@
 
 
 old2newLib(){
-echo "start converting"
+echo "start converting $1"
 
 # sed -i '/import.*/a \
 # import("stdfaust.lib");
 # ' shelfMultiBand.lib
 
 
-sed -i "s|import *(\"effect.lib\");|import("stdfaust.lib");|" "$1"
-sed -i "s|import *(\"filter.lib\");|import("stdfaust.lib");|" "$1"
-sed -i "s|import *(\"hoa.lib\");|import("stdfaust.lib");|" "$1"
-sed -i "s|import *(\"instrument.lib\");|import("stdfaust.lib");|" "$1"
-sed -i "s|import *(\"math.lib\");|import("stdfaust.lib");|" "$1"
-sed -i "s|import *(\"oscillator.lib\");|import("stdfaust.lib");|" "$1"
-sed -i "s|import *(\"reduce.lib\");|import("stdfaust.lib");|" "$1"
+sed -i "s|import *(\"effect.lib\");|import(\"stdfaust.lib\");|" "$1"
+sed -i "s|import *(\"filter.lib\");|import(\"stdfaust.lib\");|" "$1"
+sed -i "s|import *(\"hoa.lib\");|import(\"stdfaust.lib\");|" "$1"
+sed -i "s|import *(\"instrument.lib\");|import(\"stdfaust.lib\");|" "$1"
+sed -i "s|import *(\"math.lib\");|import(\"stdfaust.lib\");|" "$1"
+sed -i "s|import *(\"oscillator.lib\");|import(\"stdfaust.lib\");|" "$1"
+sed -i "s|import *(\"reduce.lib\");|import(\"stdfaust.lib\");|" "$1"
 
 echo "$(uniq $1)" > $1
 
@@ -47,7 +47,8 @@ sed -i "s|\bhz2pianokey\b|ba.hz2pianokey|g" "$1"
 sed -i "s|\bcountdown\b|ba.countdown|g" "$1"
 sed -i "s|\bcountup\b|ba.countup|g" "$1"
 sed -i "s|\bsweep\b|ba.sweep|g" "$1"
-sed -i "s|\btime\b|ba.time|g" "$1"
+# too general:
+# sed -i "s|\btime\b|ba.time|g" "$1"
 sed -i "s|\btempo\b|ba.tempo|g" "$1"
 sed -i "s|\bperiod\b|ba.period|g" "$1"
 sed -i "s|\bpulse\b|ba.pulse|g" "$1"
@@ -370,7 +371,7 @@ sed -i "s|\bautowah\b|ve.autowah|g" "$1"
 sed -i "s|\bcrybaby\b|ve.crybaby|g" "$1"
 sed -i "s|\bvocoder\b|ve.vocoder|g" "$1"
 
-echo "done converting"
+echo "done converting $1"
 }
 export -f old2newLib
 
