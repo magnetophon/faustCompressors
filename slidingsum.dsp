@@ -15,13 +15,10 @@ index = int(hslider("index", 1, 0, maxNrBits , 1));
 // fixedFibonacciOp(4,max,0,x);
 // fixedFibonacciOp(5,max,0,x);
 
-
-
 // process(x) = sumNr;
 
 process(x) = fibReduce(sumNr,maxNrBits,+,0,x) ;
 // process(x) = fibReduce(sumNr,maxNrBits,max,-INFINITY,x) ;
-
 
 // process = par(i,maxNrBits, int2FibonacciIndexOfLargestPart(i):hbargraph("index %i", 0, maxNrBits));
 // process =
