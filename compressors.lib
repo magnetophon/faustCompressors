@@ -32,9 +32,9 @@ blockSize = 256; // 161s, 26%
 
 // rmsMaxSize = 1024; // for block diagram of blockDelaySum
 // rmsMaxSize = 8; // for block diagram of binaryBlockDelaySum
-rmsMaxSize = 2:pow(15);
+// rmsMaxSize = 2:pow(15);
 // rmsMaxSize = 2:pow(16); // highest usable for blockDelaySum, used for benchmarking.
-// rmsMaxSize = 2:pow(17); // highest usable for faust2lv2
+rmsMaxSize = 2:pow(17); // highest usable for faust2lv2
 // rmsMaxSize = 2:pow(19);  // Nice and long: 11 seconds.
 // binaryBlockDelaySum is practically equally cheap at any size, up to:
 // rmsMaxSize = 2:pow(25);
