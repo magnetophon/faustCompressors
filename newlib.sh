@@ -3,12 +3,17 @@
 # copyright Bart Brouns 2016
 # licensed  under GPLv3
 
-# A crude script to convert a directory of faust code from the old (0,9.73) to the new (0.9.90) libraries
+# A crude script to convert a directory of faust code from the old (0.9.73) to the new (0.9.90) libraries
 
 # BUGS:
 
 # Make sure you only run it once; it doesn't check for you.
 # It'll convert comments too, not just code, which is not always what you want.
+
+# USAGE:
+
+# copy this scrip to the directory you want to convert
+# run ./newlib.sh
 
 
 old2newLib(){
