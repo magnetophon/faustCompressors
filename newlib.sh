@@ -3,13 +3,21 @@
 
 old2newLib(){
 echo "start converting"
-sed -i "s|import(\"effect.lib\");||" "$1"
-sed -i "s|import(\"filter.lib\");||" "$1"
-sed -i "s|import(\"hoa.lib\");||" "$1"
-sed -i "s|import(\"instrument.lib\");||" "$1"
-sed -i "s|import(\"math.lib\");||" "$1"
-sed -i "s|import(\"oscillator.lib\");||" "$1"
-sed -i "s|import(\"reduce.lib\");||" "$1"
+
+# sed -i '/import.*/a \
+# import("stdfaust.lib");
+# ' shelfMultiBand.lib
+
+
+sed -i "s|import *(\"effect.lib\");|import("stdfaust.lib");|" "$1"
+sed -i "s|import *(\"filter.lib\");|import("stdfaust.lib");|" "$1"
+sed -i "s|import *(\"hoa.lib\");|import("stdfaust.lib");|" "$1"
+sed -i "s|import *(\"instrument.lib\");|import("stdfaust.lib");|" "$1"
+sed -i "s|import *(\"math.lib\");|import("stdfaust.lib");|" "$1"
+sed -i "s|import *(\"oscillator.lib\");|import("stdfaust.lib");|" "$1"
+sed -i "s|import *(\"reduce.lib\");|import("stdfaust.lib");|" "$1"
+
+echo "$(uniq $1)" > $1
 
 
 # analyzer.lib
@@ -225,13 +233,16 @@ sed -i "s|\berf\b|ma.erf|g" "$1"
 sed -i "s|\berfc\b|ma.erfc|g" "$1"
 sed -i "s|\bgamma\b|ma.gamma|g" "$1"
 sed -i "s|\blgamma\b|ma.lgamma|g" "$1"
-sed -i "s|\bfabs, fmax, fmin\b|ma.fabs, fmax, fmin|g" "$1"
+sed -i "s|\bfabs\b|ma.fabs|g" "$1"
+sed -i "s|\bfmax\b|ma.fmax|g" "$1"
+sed -i "s|\bfmin\b|ma.fmin|g" "$1"
 sed -i "s|\bnp2\b|ma.np2|g" "$1"
 sed -i "s|\bfrac\b|ma.frac|g" "$1"
 sed -i "s|\bisnan\b|ma.isnan|g" "$1"
 sed -i "s|\bchebychev\b|ma.chebychev|g" "$1"
 sed -i "s|\bchebychevpoly\b|ma.chebychevpoly|g" "$1"
 sed -i "s|\bdiffn\b|ma.diffn|g" "$1"
+sed -i "s|\bSR\b|ma.SR|g" "$1"
 # miscefect.lib
 sed -i "s|\bcubicnl\b|ef.cubicnl|g" "$1"
 sed -i "s|\bgate_mono\b|ef.gate_mono|g" "$1"
@@ -331,6 +342,7 @@ sed -i "s|\bhadamard\b|ro.hadamard|g" "$1"
 sed -i "s|\brecursivize\b|ro.recursivize|g" "$1"
 # signal.lib
 sed -i "s|\bbus\b|si.bus|g" "$1"
+sed -i "s|\bbus2\b|(_,_)|g" "$1"
 sed -i "s|\bblock\b|si.block|g" "$1"
 sed -i "s|\binterpolate\b|si.interpolate|g" "$1"
 sed -i "s|\bsmooth\b|si.smooth|g" "$1"
