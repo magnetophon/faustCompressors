@@ -32,11 +32,11 @@ import("stdfaust.lib");
 // Provides various operations on the last N samples
 // using a high order 'slidingReduce(N,maxN,op,disabledVal,x)' fold-like function :
 //
-//   slidingSumN(n,maxn) : the sliding sum of the last n pm.input samples
-//   slidingMaxN(n,maxn) : the sliding max of the last n pm.input samples
-//   slidingMinN(n,maxn) : the sliding min of the last n pm.input samples
-//   slidingMeanN(n,maxn) : the sliding mean of the last n pm.input samples
-//   slidingRMSn(n,maxn)  : the sliding RMS of the last n pm.input samples
+//   slidingSumN(n,maxn) : the sliding sum of the last n input samples
+//   slidingMaxN(n,maxn) : the sliding max of the last n input samples
+//   slidingMinN(n,maxn) : the sliding min of the last n input samples
+//   slidingMeanN(n,maxn) : the sliding mean of the last n input samples
+//   slidingRMSn(n,maxn)  : the sliding RMS of the last n input samples
 //---------------------------------------------------------------
 
 //---------------------------------------------------------------
@@ -47,8 +47,8 @@ import("stdfaust.lib");
 // on the last <n> consecutive samples of a signal <x>.
 // For example : slidingReduce(128,128,max,-INFINITY) will compute the maximun of
 // the last 128 samples.
-// The pm.output is updated each sample,
-// unlike reduce, where the pm.output is constant for the duration of a si.block.
+// The output is updated each sample,
+// unlike reduce, where the output is constant for the duration of a block.
 
 // N           is the number of values to process
 // maxN        is the maximum number of values to process
@@ -88,8 +88,8 @@ import("stdfaust.lib");
 // is equal to the sum of v-10 trough v-19.
 // The sum of those two is equal to the sum of v0 trough v-19.
 
-// So now we just need to calculate the sum of only 10 values (let's call it the si.block), add it to itself delayed by 10 samples,
-// add that to the si.block delayed by 20 samples, etcetera.
+// So now we just need to calculate the sum of only 10 values (let's call it the block), add it to itself delayed by 10 samples,
+// add that to the block delayed by 20 samples, etcetera.
 // So adding 10 samples more, only costs one plus and one de.delay,
 // on top of the operators to calculate the sum of the first ten.
 
@@ -115,14 +115,14 @@ import("stdfaust.lib");
 
 // In the second method, we need to multiply the blocks.
 // So blocks 0 through -4 representing v0 trough -v39 get multiplied by 1,
-// and si.block -5 trough -10, representing v-40 trough -99, get turned off.
+// and block -5 trough -10, representing v-40 trough -99, get turned off.
 // But thats only 40 values.
-// To get the last two, we need to use a variable si.block:
-// a si.block of up to 10 samples, where each sample can be turned on or of.
+// To get the last two, we need to use a variable block:
+// a block of up to 10 samples, where each sample can be turned on or of.
 // To get the sum of v-40 and v-41, we ba.take the sum of the last 2 (v0 and v1),
-// using our variable si.block, and de.delay it by 40 samples.
+// using our variable block, and de.delay it by 40 samples.
 // Add that to the sum of the first 40, and we have 42 again.
-// This costs one multiply per 10 values, plus the 10 multiplies and single de.delay for the variable si.block.
+// This costs one multiply per 10 values, plus the 10 multiplies and single de.delay for the variable block.
 
 // To switch on and off values in the third method is a bit tricky:
 // With the second method, the normal (non variable) blocks have a fixed delaytime:
@@ -132,24 +132,24 @@ import("stdfaust.lib");
 // The problem with the 3rd method is that the blocks are not always used in the same order,
 // So they need a variable de.delay:
 
-// For 42 we need a si.block of 32, plus a si.block of 8, plus a si.block of 2.
-// The si.block of 2 doesn't get delayed, so represents v0 and v-1,
-// the si.block of 8 gets delayed by 2 so it represents v-2 trough v-9
-// and the si.block of 32 gets delayed by 10, so represents v-10 trough v-41.
+// For 42 we need a block of 32, plus a block of 8, plus a block of 2.
+// The block of 2 doesn't get delayed, so represents v0 and v-1,
+// the block of 8 gets delayed by 2 so it represents v-2 trough v-9
+// and the block of 32 gets delayed by 10, so represents v-10 trough v-41.
 // Add them all up, and we have the sum of v0 trough v-41 again.
 
-// To illustrate that a certain si.block does not always get the same de.delay:
+// To illustrate that a certain block does not always get the same de.delay:
 // If we wanted to get the sum of the last 32 values,
-// we'd also use the 32 si.block, but *not* delayed, so it would represent
+// we'd also use the 32 block, but *not* delayed, so it would represent
 // v0 trough v-31
 
 // So for making the third method switchable,
 // we only need one multiply and one de.delay for each doubling of the number of values.
 
 // To generalize from a function that adds the last n values
-// to one that does any(* note) two pm.input operation on the last n values,
+// to one that does any(* note) two input operation on the last n values,
 // we just need to replace the  'times 1' and 'times 0'
-// by 'choose pm.input value' and 'choose bypass value' respectively.
+// by 'choose input value' and 'choose bypass value' respectively.
 // And of course change out the plus operator for a placeholder.
 // That is implemented in slidingReduce below.
 
@@ -157,8 +157,8 @@ import("stdfaust.lib");
 
 // (* note) Not actually any operation: there are a few assumtions in the algorithm, as explained above.
 
-// todo: can we do it with one switched si.block less and an op(x) at the end?
-// that way the first si.block represents 2 instead of 1.
+// todo: can we do it with one switched block less and an op(x) at the end?
+// that way the first block represents 2 instead of 1.
 slidingReduce(N,maxN,op,disabledVal,x) =
 par(i,maxNrBits,fixedDelayOp(1<<i,x)@sumOfPrevDelays(N,maxN,i) :useVal(i)):combine(maxNrBits) with {
 // apply <op> to the last <N> values of <x>, where <N> is fixed
@@ -387,19 +387,19 @@ int2bin(N,maxN) = par(i,int2nrOfBits(maxN),int(floor(N/(1<<i)))%2);
 int2nrOfBits(0) = 0;
 int2nrOfBits(maxN) = int(floor(log(maxN)/log(2))+1);
 
-// slidingSumN(n,maxn) : the sliding sum of the last n pm.input samples
+// slidingSumN(n,maxn) : the sliding sum of the last n input samples
 slidingSumN(n,maxn) = slidingReduce(n,maxn,+,0);
 
-// slidingMaxN(n,maxn) : the sliding max of the last n pm.input samples
+// slidingMaxN(n,maxn) : the sliding max of the last n input samples
 slidingMaxN(n,maxn) = slidingReduce(n,maxn,max,-INFINITY);
 
-// slidingMinN(n,maxn) : the sliding min of the last n pm.input samples
+// slidingMinN(n,maxn) : the sliding min of the last n input samples
 slidingMinN(n,maxn) = slidingReduce(n,maxn,min,INFINITY);
 
-// slidingMeanN(n,maxn) : the sliding mean of the last n pm.input samples
+// slidingMeanN(n,maxn) : the sliding mean of the last n input samples
 slidingMeanN(n,maxn) = slidingSumN(n,maxn)/n;
 
-// slidingRMSn(n,maxn)  : the sliding RMS of the last n pm.input samples
+// slidingRMSn(n,maxn)  : the sliding RMS of the last n input samples
 slidingRMSn(n,maxn) = pow(2):slidingMeanN(n,maxn) : sqrt;
 
 // maybe useful for math.lib:

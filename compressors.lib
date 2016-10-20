@@ -29,8 +29,8 @@ blockSize = 256; // 161s, 26%
 // Same performance with all compilation options,
 // but needs -double as well, because of si.lag_ud bug below
 
-// rmsMaxSize = 1024; // for si.block diagram of blockDelaySum
-// rmsMaxSize = 8; // for si.block diagram of binaryBlockDelaySum
+// rmsMaxSize = 1024; // for block diagram of blockDelaySum
+// rmsMaxSize = 8; // for block diagram of binaryBlockDelaySum
 // rmsMaxSize = 2:pow(15);
 // rmsMaxSize = 2:pow(16); // highest usable for blockDelaySum, used for benchmarking.
 rmsMaxSize = 2:pow(17); // highest usable for faust2lv2
@@ -54,7 +54,7 @@ my_compression_gain_mono(strength,thresh,att,rel,knee,prePost) =
 // above thresh+(knee/2) there is the same gain reduction as without a knee,
 // and in between there is a gradual increase in gain reduction.
 
-// prePost places the level detector either at the pm.input or after the gain computer
+// prePost places the level detector either at the input or after the gain computer
 // this turns it from a linear return-to-fi.zero detector into a log  domain return-to-threshold detector
 
 // source:
@@ -277,7 +277,7 @@ compressor_N_chan_demo(N) =
       0, -30, 10, 0.1));
 
     makeupgain = comp_group(hslider("[6] Makeup Gain [unit:dB]
-      [tooltip: The compressed-signal pm.output level is increased by this amount (in dB) to make up for the level lost due to compression]",
+      [tooltip: The compressed-signal input level is increased by this amount (in dB) to make up for the level lost due to compression]",
       0, 0, maxGR*-1, 0.1)) : ba.db2linear;
 // };
 

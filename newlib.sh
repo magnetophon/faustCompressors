@@ -35,7 +35,6 @@ old2newLib(){
     sed -i "s|\bthird_octave_filterbank\b|an.third_octave_filterbank|g" "$1"
     sed -i "s|\bhalf_octave_filterbank\b|an.half_octave_filterbank|g" "$1"
     sed -i "s|\banalyzer\b|an.analyzer|g" "$1"
-
     # basic.lib
     sed -i "s|\bsamp2sec\b|ba.samp2sec|g" "$1"
     sed -i "s|\bsec2samp\b|ba.sec2samp|g" "$1"
@@ -320,8 +319,9 @@ old2newLib(){
     sed -i "s|\bphaser2_stereo\b|pf.phaser2_stereo|g" "$1"
     # pm.lib
     sed -i "s|\bchain\b|pm.chain|g" "$1"
-    sed -i "s|\binput\b|pm.input|g" "$1"
-    sed -i "s|\boutput\b|pm.output|g" "$1"
+    # too general:
+    # sed -i "s|\binput\b|pm.input|g" "$1"
+    # sed -i "s|\boutput\b|pm.output|g" "$1"
     sed -i "s|\bterminations\b|pm.terminations|g" "$1"
     sed -i "s|\bfullTerminations\b|pm.fullTerminations|g" "$1"
     sed -i "s|\bleftTermination\b|pm.leftTermination|g" "$1"
@@ -348,7 +348,8 @@ old2newLib(){
     # signal.lib
     sed -i "s|\bbus\b|si.bus|g" "$1"
     sed -i "s|\bbus2\b|(_,_)|g" "$1"
-    sed -i "s|\bblock\b|si.block|g" "$1"
+    # too general:
+    # sed -i "s|\bblock\b|si.block|g" "$1"
     sed -i "s|\binterpolate\b|si.interpolate|g" "$1"
     sed -i "s|\bsmooth\b|si.smooth|g" "$1"
     sed -i "s|\bsmoo\b|si.smoo|g" "$1"
