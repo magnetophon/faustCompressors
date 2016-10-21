@@ -93,6 +93,11 @@ old2newLib(){
     # delay.lib
     sed -i "s|\bdelay\b|de.delay|g" "$1"
     sed -i "s|\bfdelay\b|de.fdelay|g" "$1"
+    sed -i "s|\bfdelay1\b|de.fdelay1|g" "$1"
+    sed -i "s|\bfdelay2\b|de.fdelay2|g" "$1"
+    sed -i "s|\bfdelay3\b|de.fdelay3|g" "$1"
+    sed -i "s|\bfdelay4\b|de.fdelay4|g" "$1"
+    sed -i "s|\bfdelay5\b|de.fdelay5|g" "$1"
     sed -i "s|\bsdelay\b|de.sdelay|g" "$1"
     sed -i "s|\bfdelaylti\b|de.fdelaylti|g" "$1"
     sed -i "s|\bfdelayltv\b|de.fdelayltv|g" "$1"
