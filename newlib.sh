@@ -20,6 +20,7 @@ old2newLib(){
     echo "start converting $1"
 
     sed -i "s|import *(\"effect.lib\");|import(\"stdfaust.lib\");|" "$1"
+    sed -i "s|import *(\"music.lib\");|import(\"stdfaust.lib\");|" "$1"
     sed -i "s|import *(\"filter.lib\");|import(\"stdfaust.lib\");|" "$1"
     sed -i "s|import *(\"hoa.lib\");|import(\"stdfaust.lib\");|" "$1"
     sed -i "s|import *(\"instrument.lib\");|import(\"stdfaust.lib\");|" "$1"
@@ -220,6 +221,7 @@ old2newLib(){
     sed -i "s|\bmap\b|ho.map|g" "$1"
     sed -i "s|\brotate\b|ho.rotate|g" "$1"
     # math.lib
+    sed -i "s|\bPI\b|ma.PI|g" "$1"
     sed -i "s|\bneg\b|ma.neg|g" "$1"
     sed -i "s|\bsub\b|ma.sub|g" "$1"
     sed -i "s|\binv\b|ma.inv|g" "$1"
