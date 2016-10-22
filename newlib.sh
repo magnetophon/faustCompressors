@@ -90,6 +90,7 @@ old2newLib(){
     sed -i "s|\bcompressor_stereo\b|co.compressor_stereo|g" "$1"
     sed -i "s|\blimiter_1176_R4_mono\b|co.limiter_1176_R4_mono|g" "$1"
     sed -i "s|\blimiter_1176_R4_stereo\b|co.limiter_1176_R4_stereo|g" "$1"
+    sed -i "s|\bcompression_gain_mono\b|co.compression_gain_mono|g" "$1"
     # delay.lib
     sed -i "s|\bdelay\b|de.delay|g" "$1"
     sed -i "s|\bfdelay\b|de.fdelay|g" "$1"
