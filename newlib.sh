@@ -59,7 +59,7 @@ old2newLib(){
     # too general:
     # sed -i "s|\btime\b|ba.time|g" "$1"
     sed -i "s|\btempo\b|ba.tempo|g" "$1"
-    sed -i "s|\bperiod\b|ba.period|g" "$1"
+    # sed -i "s|\bperiod\b|ba.period|g" "$1"
     sed -i "s|\bpulse\b|ba.pulse|g" "$1"
     sed -i "s|\bpulsen\b|ba.pulsen|g" "$1"
     sed -i "s|\bbeat\b|ba.beat|g" "$1"
