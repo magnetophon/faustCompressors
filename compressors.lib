@@ -37,6 +37,7 @@ rmsMaxSize = 2:pow(17); // highest usable for faust2lv2
 // rmsMaxSize = 2:pow(19);  // Nice and long: 11 seconds.
 // binaryBlockDelaySum is practically equally cheap at any size, up to:
 // rmsMaxSize = 2:pow(25);
+// rmsMaxSize = 2:pow(27);
 // Crashes when ypu go higher, cause 2^25 eats more than half my RAM.
 // To be expected, at 760 seconds of RMS-time!
 maxRelTime = rmsMaxSize/sr;
@@ -44,9 +45,9 @@ sr = 44100;
 
 // note: si.lag_ud has a bug where ba.if you compile with standard precision,
 // down is 0 and prePost is 1, you go into infinite GR and stay there
-my_compression_gain_mono(strength,thresh,att,rel,knee,prePost) =
+peak_compression_gain_mono(strength,thresh,att,rel,knee,prePost) =
   abs:bypass(prePost,si.lag_ud(att,rel)) : ba.linear2db : gain_computer(strength,thresh,knee):bypass((prePost*-1)+1,si.lag_ud(rel,att)) : ba.db2linear;
-// my_compression_gain_mono(strength,thresh,att,rel,knee) has a more traditional knee parameter than
+// peak_compression_gain_mono(strength,thresh,att,rel,knee) has a more traditional knee parameter than
 // compression_gain_mono(ratio,thresh,att,rel), which also has an internal parameter called knee,
 // but that is a time-smoothing of the gain-reduction.
 // This knee is a gradual increase in gain reduction around the threshold:
@@ -55,7 +56,7 @@ my_compression_gain_mono(strength,thresh,att,rel,knee,prePost) =
 // and in between there is a gradual increase in gain reduction.
 
 // prePost places the level detector either at the input or after the gain computer
-// this turns it from a linear return-to-fi.zero detector into a log  domain return-to-threshold detector
+// this turns it from a linear return-to-zero detector into a log  domain return-to-threshold detector
 
 // source:
 // Digital Dynamic Range Compressor Design
@@ -95,14 +96,14 @@ RMS(time) = slidingRMSn(s,rmsMaxSize) with {
 // generalise compression gains for N channels.
 // first we define a mono version:
 compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,1) =
-  my_compression_gain_mono(strength,thresh,att,rel,knee,prePost);
+  peak_compression_gain_mono(strength,thresh,att,rel,knee,prePost);
 
 // The actual N-channel version:
 // Calculate the maximum gain reduction of N channels,
 // and then crossfade between that and each channel's own gain reduction,
 // to link/unlink channels
 compression_gain_N_chan(strength,thresh,att,rel,knee,prePost,link,N) =
-  par(i, N, my_compression_gain_mono(strength,thresh,att,rel,knee,prePost))
+  par(i, N, peak_compression_gain_mono(strength,thresh,att,rel,knee,prePost))
   <:(si.bus(N),(minimum(N)<:si.bus(N))):ro.interleave(N,2):par(i,N,(crossfade(link)));
 
 // an RMS versions of the above
@@ -142,7 +143,7 @@ FBFFcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,FBFF,meter,N) =
 // RMS feed back and/or forward compressor
 // to save CPU we cheat a bit, in a similar way as in the original libs:
 // instead of crosfading between two sets of gain calculators as above,
-// we ba.take the abs of the audio from both the FF and FB, and crossfade between those,
+// we take the abs of the audio from both the FF and FB, and crossfade between those,
 // and feed that into one set of gain calculators
 // again the strength is much higher when in FB mode, but implemented differently
 RMS_FBFFcompressor_N_chan(strength,thresh,att,rel,knee,prePost,link,FBFF,meter,N) =
@@ -315,7 +316,7 @@ drumDuck =  SCfilters <: ( si.bus(nrChan), ( duckGainReductions <: par(i, nrChan
 
 duckGainReductions = par(i, nrChan, duckGainReduction(i));
 
-duckGainReduction(i) = chanGroup(i+1, my_compression_gain_mono(duck_strength,threshold,attack,release,knee,prePost));
+duckGainReduction(i) = chanGroup(i+1, peak_compression_gain_mono(duck_strength,threshold,attack,release,knee,prePost));
 
 meDuckGR(i) = chanGroup(i+1, par(j, nrChan, (ba.linear2db*(i!=j))):>ba.db2linear:meter);
 
