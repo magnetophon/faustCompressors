@@ -186,17 +186,10 @@ variableBinaryMaxN(N,maxN,x) =
   isUsed(i) = ba.take(i+1,(int2bin(N,maxN)));
 };
 
-// ok, let's pick hese apart individually:
 
-// the first par() statement
-// maxNrBits determines the number of bits needed to represent maxN
-//
-// sumOfPrevBlockSizes()
-//
-// useVal()
-// combine()
-
-//***************************************************************************************************************************************************************************
+//---------------------------------------------------------------
+// Implementation
+//---------------------------------------------------------------
 
 slidingReduce(op,N,maxN,disabledVal,x) =
   par(i,maxNrBits,fixedDelayOp(pow2(i),x)@sumOfPrevBlockSizes(N,maxN,i) :useVal(i)):combine(maxNrBits) with {
