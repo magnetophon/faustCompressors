@@ -2,29 +2,15 @@
  ************************************************************************
   	FAUST library file
 	Copyright (C) 2016 Bart Brouns
-    ---------------------------------------------------------------------
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as
-	published by the Free Software Foundation; either version 2.1 of the
-	License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
- 	License along with the GNU C Library; if not, write to the Free
-  	Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-  	02111-1307 USA.
+ /* SPDX-License-Identifier: GPL-2.0 */
  ************************************************************************
  ************************************************************************/
 
 declare name "Sliding Reduce Library";
 declare author "Bart Brouns (bart@magnetophon.nl)";
 declare copyright "Bart Brouns";
-declare version "0.1";
-declare license "LGPL";
+declare version "0.2";
+declare license "GPL2";
 
 import("stdfaust.lib");
 
@@ -282,9 +268,9 @@ with {
   // isUsed(i) = ba.take(i+1,(int2bin(N,maxN)));
 };
 
-// pow2(i) = 1<<i;
+pow2(i) = 1<<i;
 // same as:
-pow2(i) = int(pow(2,i));
+// pow2(i) = int(pow(2,i));
 // but in the block diagram, it will be displayed as a number, instead of a formula
 
 // // convert N into a list of ones and zeros
