@@ -2,7 +2,7 @@
  ************************************************************************
   	FAUST library file
 	Copyright (C) 2016 Bart Brouns
- /* SPDX-License-Identifier: GPL-2.0 */
+ /* SPDX-License-Identifier: GPL-3.0 */
  ************************************************************************
  ************************************************************************/
 
@@ -10,7 +10,7 @@ declare name "Sliding Reduce Library";
 declare author "Bart Brouns (bart@magnetophon.nl)";
 declare copyright "Bart Brouns";
 declare version "0.2";
-declare license "GPL2";
+declare license "GPLv3";
 
 import("stdfaust.lib");
 
