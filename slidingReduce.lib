@@ -54,6 +54,8 @@ import("stdfaust.lib");
 //---------------------------------------------------------------
 
 // If we want the maximum of the last 8 values, we can do that as
+
+/*
 simpleMax(x) =
   (
     (
@@ -70,8 +72,8 @@ simpleMax(x) =
   :max;
 
 // max(x@2,x@3)
-//is the same as
-//max(x@0,x@1)@2
+// is the same as
+// max(x@0,x@1)@2
 // but the latter re-uses a value we already computed,so is more efficient.
 // Using the same trick for values 4 trough 7, we can write:
 efficientMax(x)=
@@ -185,7 +187,7 @@ variableBinaryMaxN(N,maxN,x) =
   useVal(i) = select2( isUsed(i), (0-INFINITY),_);
   isUsed(i) = ba.take(i+1,(int2bin(N,maxN)));
 };
-
+*/
 
 //---------------------------------------------------------------
 // Implementation
@@ -220,57 +222,18 @@ slidingReduce(op,N,maxN,disabledVal,x) =
   // useVal(i) =
   //     select2( isUsed(i) , disabledVal,_);
   isUsed(i) = ba.take(i+1,(int2bin(N,maxN)));
+  pow2(i) = 1<<i;
+  // same as:
+  // pow2(i) = int(pow(2,i));
+  // but in the block diagram, it will be displayed as a number, instead of a formula
+
+  // // convert N into a list of ones and zeros
+  int2bin(N,maxN) = par(j,int2nrOfBits(maxN),int(floor(N/(pow2(j))))%2);
+  // calculate how many ones and zeros are needed to represent maxN
+  int2nrOfBits(0) = 0;
+  int2nrOfBits(maxN) = int(floor(log(maxN)/log(2))+1);
 };
 
-// If you can not, or do not want to specify a 'bypass value', you can use newSlidingReduce below.
-newSlidingReduce(op,N,maxN,x) =
-  par(i,maxNrBits,fixedDelayOp(pow2(i),x)@sumOfPrevBlockSizes(N,maxN,i) )
-  :switched_combine(N,maxN)
-with {
-  // apply <op> to the last <N> values of <x>, where <N> is fixed
-  fixedDelayOp = case {
-                   (1,x) => x;
-                   (N,x) =>  op(fixedDelayOp(N/2,x) , fixedDelayOp(N/2,x)@(N/2));
-                 };
-  // The sum of all the delays that are applied to the previous blocks
-  sumOfPrevBlockSizes(N,maxN,0) = 0;
-  sumOfPrevBlockSizes(N,maxN,i) = (ba.subseq((allBlockSizes(N,maxN)),0,i):>_) with {
-    allBlockSizes(N,maxN) = par(j, maxNrBits, (pow2(j)) * ba.take(j+1,(int2bin(N,maxN))) );
-  };
-  maxNrBits = int2nrOfBits(maxN);
-  // Apply <op> to <N> parallel inputsignals
-  combine(0) = 0:!;
-               combine(1) = _;
-  combine(2) = op;
-  combine(N) = op(combine(N-1),_);
-
-  isUsed(i,n) = int(floor(i/(pow2(n)))%2);
-
-  nrOfUsedBits(i,n) = par(j,int2nrOfBits(n),isUsed(i,j)):>_;
-
-  switched_combine(i,n) =
-    si.bus(int2nrOfBits(n))<:
-    par(j,n,
-        par(k,int2nrOfBits(n),S(isUsed(j+1,k))):combine(nrOfUsedBits(j+1,n))
-       )
-    : par(j, n, _*(i==j+1)):>_
-  with {
-    S(0) = !;
-           S(1) = _;
-  };
-  // isUsed(i) = ba.take(i+1,(int2bin(N,maxN)));
-};
-
-pow2(i) = 1<<i;
-// same as:
-// pow2(i) = int(pow(2,i));
-// but in the block diagram, it will be displayed as a number, instead of a formula
-
-// // convert N into a list of ones and zeros
-int2bin(N,maxN) = par(j,int2nrOfBits(maxN),int(floor(N/(pow2(j))))%2);
-// calculate how many ones and zeros are needed to represent maxN
-int2nrOfBits(0) = 0;
-int2nrOfBits(maxN) = int(floor(log(maxN)/log(2))+1);
 
 // slidingSumN(n,maxn) : the sliding sum of the last n input samples
 slidingSumN(n,maxn) = slidingReduce(+,n,maxn,0);
