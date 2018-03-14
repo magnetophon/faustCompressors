@@ -148,7 +148,7 @@ binaryMaxSix(x) =
     recursiveMax(2,x)@0, // first two
     recursiveMax(4,x)@2  // third trough sixt
   ):max;
-// Note that recursiveMax(2,x) is used at a different delay then in binaryMaxThree, since it represents 3 trough 6, not 2 and 3
+// Note that recursiveMax(2,x) is used at a different delay then in binaryMaxThree, since it represents 1 and 2, not 2 and 3
 // Each block is delayed the combined size of the previous blocks
 
 // N=7
