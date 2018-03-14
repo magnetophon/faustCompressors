@@ -264,7 +264,7 @@ slidingSumN(n,maxn) = slidingReduce(+,n,maxn,0);
 // Description
 //
 // The sliding maximum of the last n input samples
-
+//
 // #### Usage
 //
 // ```
@@ -279,12 +279,11 @@ slidingSumN(n,maxn) = slidingReduce(+,n,maxn,0);
 
 slidingMaxN(n,maxn) = slidingReduce(max,n,maxn,-INFINITY);
 
-// slidingMinN(n,maxn) : the sliding min of the last n input samples
 //--------------------`slidingSumN`-------------------
 // Description
 //
 // The sliding minimum of the last n input samples
-
+//
 // #### Usage
 //
 // ```
@@ -299,12 +298,11 @@ slidingMaxN(n,maxn) = slidingReduce(max,n,maxn,-INFINITY);
 
 slidingMinN(n,maxn) = slidingReduce(min,n,maxn,INFINITY);
 
-// slidingMeanN(n,maxn) : the sliding mean of the last n input samples
 //--------------------`slidingMeanN`-------------------
 // Description
 //
 // The sliding mean of the last n input samples
-
+//
 // #### Usage
 //
 // ```
@@ -319,12 +317,11 @@ slidingMinN(n,maxn) = slidingReduce(min,n,maxn,INFINITY);
 
 slidingMeanN(n,maxn) = slidingSumN(n,maxn)/n;
 
-// slidingRMSn(n,maxn)  : the sliding RMS of the last n input samples
 //--------------------`slidingRMSn`-------------------
 // Description
 //
 // The root mean square of the last n input samples
-
+//
 // #### Usage
 //
 // ```
