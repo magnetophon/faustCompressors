@@ -212,10 +212,8 @@ slidingReduce(op,N,maxN,disabledVal,x) =
   allBlockSizes(N,maxN) = par(i, maxNrBits, (pow2(i)) * isUsed(i) );
   maxNrBits = int2nrOfBits(maxN);
   // Apply <op> to <N> parallel inputsignals
-  // combine(2) = op;
-  // combine(N) = op(combine(N-1),_);
-  combine(2) = max;
-  combine(N) = max(combine(N-1),_);
+  combine(2) = op;
+  combine(N) = op(combine(N-1),_);
   // Decide wether or not to use a certain value, based on N
   // Basically only the second <select2> is needed,
   // but this version also works for N == 0
