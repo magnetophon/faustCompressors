@@ -23,9 +23,41 @@ import("stdfaust.lib");
 //   slidingMeanN(n,maxn) : the sliding mean of the last n input samples
 //   slidingRMSn(n,maxn)  : the sliding RMS of the last n input samples
 
-//---------------------------------------------------------------
+
+//--------------------`slidingReduce`-------------------
+// Description
+//
+// Fold-like high order function. Apply a binary operation <op>
+// on the last <n> consecutive samples of a signal <x>.
+// For example : slidingReduce(max,128,128,-INFINITY) will compute the maximum of
+// the last 128 samples.
+// The output is updated each sample,
+// unlike reduce, where the output is constant for the duration of a block
+//
+// #### Usage
+//
+// ```
+// _ : slidingReduce(op,N,maxN,disabledVal) : _
+// ```
+//
+// Where:
+//
+// * 'N':           the number of values to process
+// * 'maxN':        the maximum number of values to process, needs to be a power of 2
+// * 'op':          the operator
+// * 'disabledVal': the value to use when we want to ignore a value.
+
+// In other words:
+// op(x,disabledVal) should equal x
+// For example:
+// +(x,0) equals x
+// min(x,INFINITY) equals x
+// So if we want to calculate the sum, we need to give 0 as disabledVal,
+// and if we want the minimum, we need to give INFINITY as disabledVal
+//======================Sliding Reduce==================
+//------------------------------------------------------
 // working principle
-//---------------------------------------------------------------
+//------------------------------------------------------
 
 // If we want the maximum of the last 8 values, we can do that as
 
@@ -162,42 +194,13 @@ variableBinaryMaxN(N,maxN,x) =
   isUsed(i) = ba.take(i+1,(int2bin(N,maxN)));
 };
 */
+//======================Sliding Reduce==================
 
-//---------------------------------------------------------------
+//------------------------------------------------------
+
+//------------------------------------------------------
 // Implementation
-//---------------------------------------------------------------
-
-//--------------------`slidingReduce`-------------------
-// Description
-//
-// Fold-like high order function. Apply a binary operation <op>
-// on the last <n> consecutive samples of a signal <x>.
-// For example : slidingReduce(max,128,128,-INFINITY) will compute the maximum of
-// the last 128 samples.
-// The output is updated each sample,
-// unlike reduce, where the output is constant for the duration of a block
-//
-// #### Usage
-//
-// ```
-// _ : slidingReduce(op,N,maxN,disabledVal) : _
-// ```
-//
-// Where:
-//
-// * 'N':           the number of values to process
-// * 'maxN':        the maximum number of values to process, needs to be a power of 2
-// * 'op':          the operator
-// * 'disabledVal': the value to use when we want to ignore a value.
-
-// In other words:
-// op(x,disabledVal) should equal x
-// For example:
-// +(x,0) equals x
-// min(x,INFINITY) equals x
-// So if we want to calculate the sum, we need to give 0 as disabledVal,
-// and if we want the minimum, we need to give INFINITY as disabledVal
-//------------------------------------------------------------
+//------------------------------------------------------
 
 slidingReduce(op,N,maxN,disabledVal,x) =
   par(i,maxNrBits,fixedDelayOp(pow2(i),x)@sumOfPrevBlockSizes(N,maxN,i) :useVal(i)):combine(maxNrBits) with {
@@ -254,7 +257,7 @@ slidingReduce(op,N,maxN,disabledVal,x) =
 //
 // * 'N':           the number of values to process
 // * 'maxN':        the maximum number of values to process, needs to be a power of 2
-//------------------------------------------------------------
+//------------------------------------------------------
 
 slidingSumN(n,maxn) = slidingReduce(+,n,maxn,0);
 
@@ -273,7 +276,7 @@ slidingSumN(n,maxn) = slidingReduce(+,n,maxn,0);
 //
 // * 'N':           the number of values to process
 // * 'maxN':        the maximum number of values to process, needs to be a power of 2
-//------------------------------------------------------------
+//------------------------------------------------------
 
 slidingMaxN(n,maxn) = slidingReduce(max,n,maxn,-INFINITY);
 
@@ -292,7 +295,7 @@ slidingMaxN(n,maxn) = slidingReduce(max,n,maxn,-INFINITY);
 //
 // * 'N':           the number of values to process
 // * 'maxN':        the maximum number of values to process, needs to be a power of 2
-//------------------------------------------------------------
+//------------------------------------------------------
 
 slidingMinN(n,maxn) = slidingReduce(min,n,maxn,INFINITY);
 
@@ -311,7 +314,7 @@ slidingMinN(n,maxn) = slidingReduce(min,n,maxn,INFINITY);
 //
 // * 'N':           the number of values to process
 // * 'maxN':        the maximum number of values to process, needs to be a power of 2
-//------------------------------------------------------------
+//------------------------------------------------------
 
 slidingMeanN(n,maxn) = slidingSumN(n,maxn)/n;
 
@@ -330,7 +333,7 @@ slidingMeanN(n,maxn) = slidingSumN(n,maxn)/n;
 //
 // * 'N':           the number of values to process
 // * 'maxN':        the maximum number of values to process, needs to be a power of 2
-//------------------------------------------------------------
+//------------------------------------------------------
 
 slidingRMSn(n,maxn) = pow(2):slidingMeanN(n,maxn) : sqrt;
 
