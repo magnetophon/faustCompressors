@@ -1,7 +1,8 @@
-declare author "Bart Brouns";
 declare name "RMS_FBcompressor_peak_limiter_mono";
-declare version "1.2";
-declare license "GPLv3";
+declare version "1.2.1";
+declare author "Bart Brouns";
+declare license "GPL-3.0-only";
+declare copyright "2018 - 2023, Bart Brouns";
 
 import("compressors.lib");
 

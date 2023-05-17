@@ -1,6 +1,8 @@
+declare name "drumDuxpander";
+declare version "1.2.1";
 declare author "Bart Brouns";
-declare version "1.2";
-declare license "GPLv3";
+declare license "GPL-3.0-only";
+declare copyright "2018 - 2023, Bart Brouns";
 
 import("compressors.lib");
 

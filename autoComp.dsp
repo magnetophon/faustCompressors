@@ -1,7 +1,10 @@
-declare author "Bart Brouns";
 declare name "autoComp";
-declare version "0.1";
-declare license "GPLv3";
+declare version "0.1.1";
+declare author "Bart Brouns";
+declare license "GPL-3.0-only";
+declare copyright "2018 - 2023, Bart Brouns";
+
+
 
 import("compressors.lib");
 
